@@ -96,8 +96,6 @@ if __name__=="__main__":
     df = df[df["split"]!="none"]
     
     df["y"] = df["is_exciting"].apply(lambda x: 1 if x == "t" else 0)
-    df["y"] = 0
-    df["y"][df["is_exciting"]=="t"] = 1
     
     text_vars=["title", "short_description", "need_statement", "essay"]
     for var in text_vars:
