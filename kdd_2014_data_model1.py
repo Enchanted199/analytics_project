@@ -78,7 +78,7 @@ def clean_essay(string, lower=False):
 def get_prev_exp(df, to_file, var="teacher_acctid", responses=["y","y2","y3","y4","y5","y6","y7","y8","y9","y10"]):
     df = df.sort([var, "date_posted"])
     df.index = list(range(len(df)))    
-    with open(to_file, "wb") as f:
+    with open(to_file, "w") as f:
         f.write(",".join(["projectid",var,"date_posted",var+"_days"] + [var+"_"+r+"_prev" for r in responses] + [var+"_cnt",var+"_cnt_train"])+"\n")   
         prev_var = 0
         for i, v in enumerate(df[var]):
