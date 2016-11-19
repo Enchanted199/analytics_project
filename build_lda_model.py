@@ -37,9 +37,10 @@ def create_dictionary(df, text_vars, stem=False):
     p_stemmer = PorterStemmer()
     
     texts = []
-    for var in text_vars:
-        for raw in df[var]:
-            tokens = tokenizer.tokenize(raw)
+    for index, row in df.iterrows():
+        all_tokens = []
+        for var in text_vars:
+            tokens = tokenizer.tokenize(row[var])
         
             # remove stop words from tokens
             tokens = [i for i in tokens if not i in en_stop]
@@ -48,8 +49,9 @@ def create_dictionary(df, text_vars, stem=False):
             if stem:
                 tokens = [p_stemmer.stem(i) for i in tokens]
         
-            # add tokens to list
-            texts.append(tokens)
+            all_tokens += tokens
+        # add tokens to list
+        texts.append(all_tokens)
     
     # turn our tokenized documents into a id <-> term dictionary
     dictionary = corpora.Dictionary(texts)
@@ -88,6 +90,7 @@ def main(args):
                                                id2word = dictionary, passes=args.passes)
     if args.printmodel:
         print(ldamodel.print_topics(num_topics=args.num_topics, num_words=10))
+
     lda_model_file = args.outdir + "/" + args.prefix + '-lda.model'
     print("Saving ldamodel to " + lda_model_file)
     ldamodel.save(lda_model_file)
