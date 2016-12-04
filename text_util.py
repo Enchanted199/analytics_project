@@ -16,6 +16,8 @@ import re
 PATTERN = r"(?u)\b[A-Za-z0-9()\'\-?!\"%]+\b"
 
 def clean_essay(string):
+    if not isinstance(string, str):
+        return ""
     string = re.sub(r"\\t", " ", string)   
     string = re.sub(r"\\n", " ", string)   
     string = re.sub(r"\\r", " ", string)   
@@ -75,7 +77,7 @@ def create_dictionary(df, text_vars, stem=False):
     dictionary.compactify()
     return dictionary
     
-def create_iterative_dictionary(df, text_vars, stem=False):
+def create_iterative_dictionary(df, text_vars, stem=False, no_below=5, no_above=0.05, keep_n=100000):
     tokenizer = RegexpTokenizer(PATTERN)
     en_stop = get_stop_words('en')
     p_stemmer = PorterStemmer()
@@ -98,7 +100,7 @@ def create_iterative_dictionary(df, text_vars, stem=False):
         # add tokens to dictionary
         dictionary.add_documents([all_tokens])
     
-    dictionary.filter_extremes(no_below=5, no_above=0.05, keep_n=100000)
+    dictionary.filter_extremes(no_below=no_below, no_above=no_above, keep_n=keep_n)
     dictionary.compactify()
     return dictionary
 
@@ -108,11 +110,9 @@ def create_texts_and_dictionary(df, text_vars, stem=False):
     
     # turn our tokenized documents into a id <-> term dictionary
     dictionary = corpora.Dictionary(texts)
-    dictionary.filter_extremes(no_below=5, no_above=0.05, keep_n=100000)
+    dictionary.filter_extremes(no_below=5, no_above=0.05, keep_n=200000)
     dictionary.compactify()
     return (texts, dictionary)
-    
-
 
 
 def create_doc_vectors(df, text_vars, dictionary, stem=False, idfield='projectid'):
